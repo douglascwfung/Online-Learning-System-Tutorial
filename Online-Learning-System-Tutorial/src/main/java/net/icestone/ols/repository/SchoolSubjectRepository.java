@@ -6,16 +6,15 @@ import org.springframework.stereotype.Repository;
 
 import net.icestone.ols.model.SchoolSubject;
 
-//@Repository
-////public interface SchoolSubjectRepository extends JpaRepository<SchoolSubject, Long>{
-//public interface SchoolSubjectRepository extends CrudRepository<SchoolSubject, Long>{
-//	
-//	SchoolSubject findBySubjectName(String subjectName);
-//		
-//}
-
-
-public interface SchoolSubjectRepository extends JpaRepository<SchoolSubject, Long> {
+@Repository
+public interface SchoolSubjectRepository extends CrudRepository<SchoolSubject, Long>{
 	
-	
+	SchoolSubject findBySubjectName(String subjectName);
+		
 }
+
+
+//public interface SchoolSubjectRepository extends JpaRepository<SchoolSubject, Long> {
+//	
+//	
+//}
