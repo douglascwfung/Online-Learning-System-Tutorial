@@ -236,6 +236,24 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
     }
     
     
+    /**
+     * Handles CustomConstraintViolationException. 
+     *
+     * @param ex the CustomConstraintViolationException
+     * @return the ApiError object
+     */
+    @ExceptionHandler(CustomConstraintViolationException.class)
+    protected ResponseEntity<Object> handleCustomConstraintViolationException(
+    		CustomConstraintViolationException ex) {
+        ApiError apiError = new ApiError(BAD_REQUEST);
+        apiError.setMessage("Validation error");
+        
+        apiError.addValidationErrors(ex.getBindingResult().getFieldErrors());
+        apiError.addValidationError(ex.getBindingResult().getGlobalErrors());
+        
+        return buildResponseEntity(apiError);
+    }
+    
     private ResponseEntity<Object> buildResponseEntity(ApiError apiError) {
         return new ResponseEntity<>(apiError, apiError.getStatus());
     }

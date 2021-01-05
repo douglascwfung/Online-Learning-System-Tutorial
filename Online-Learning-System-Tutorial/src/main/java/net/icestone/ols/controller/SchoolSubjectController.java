@@ -1,11 +1,21 @@
 package net.icestone.ols.controller;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Valid;
+import javax.validation.Validation;
+import javax.validation.Validator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,9 +24,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import net.icestone.ols.exceptions.CustomConstraintViolationException;
 import net.icestone.ols.model.SchoolSubject;
-import net.icestone.ols.repository.SchoolSubjectRepository;
 import net.icestone.ols.service.SchoolSubjectService;
+import net.icestone.ols.validator.SchoolSubjectValidator;
 
 @RestController
 @RequestMapping("/api/schoolsubject")
@@ -26,6 +37,9 @@ public class SchoolSubjectController {
 	@Autowired
 	private SchoolSubjectService schoolSubjectService;
 
+    @Autowired
+    private SchoolSubjectValidator schoolSubjectValidator;
+	
 	
     @GetMapping("/all")
     public Iterable<SchoolSubject> getAllProjects(){return schoolSubjectService.findAllSchoolSubjects();}
@@ -73,8 +87,31 @@ public class SchoolSubjectController {
     
     
     @PostMapping("")
-    public ResponseEntity<?> createSchoolSubject( @RequestBody SchoolSubject schoolSubject, BindingResult result){
+    public ResponseEntity<?> createSchoolSubject(@Valid @RequestBody SchoolSubject schoolSubject, BindingResult result){
+    	
+    	System.out.println("before:"+result);
+    	
+    	schoolSubjectValidator.validate(schoolSubject,result);
+    	
+    	System.out.println("after:"+result);
+    	
+    	
+    	System.out.println("after 1:"+result.getModel());
+    	
+    	System.out.println("after 2:"+result.getAllErrors());
+    	
+    	//SpringValidatorAdapter springValidatorAdapter = new SpringValidatorAdapter((Validator) schoolSubjectValidator);
+    	
+    	
+    	
+    	//ConstraintViolationException summary = new ConstraintViolationException((Set) result);
 
+    	
+    	//Set<ConstraintViolation<SchoolSubject>> violations = new Set<ConstraintViolation<SchoolSubject>>;
+    	
+    	//if (result.getErrorCount() > 0) throw new ConstraintViolationException(result) ; 
+    	if (result.getErrorCount() > 0) throw new CustomConstraintViolationException("School Subject Validation Error", result) ; 
+    	
     	SchoolSubject schoolSubject1 = schoolSubjectService.saveOrUpdateSchoolSubject(schoolSubject);
         return new ResponseEntity<SchoolSubject>(schoolSubject1, HttpStatus.CREATED);
     }

@@ -6,6 +6,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,8 +21,11 @@ public class SchoolSubject {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
    
-    @Column(name="subject_name")
+    @NotBlank(message = "Subject name is required")
+    @Column(name="subject_name", unique = true)
     private String subjectName;
 
-    
+    @Size (min=5, max=200)
+    @Column(name="subject_description")
+    private String subjectDesc;
 }
