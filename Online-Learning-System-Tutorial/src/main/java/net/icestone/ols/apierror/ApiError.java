@@ -3,6 +3,7 @@ package net.icestone.ols.apierror;
 import net.icestone.ols.util.LowerCaseClassNameResolver;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
 import lombok.Data;
 import org.hibernate.validator.internal.engine.path.PathImpl;
@@ -23,6 +24,7 @@ public
 class ApiError {
 
     private HttpStatus status;
+    //@JsonSerialize(as = LocalDateTime.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
     private LocalDateTime timestamp;
     private String message;

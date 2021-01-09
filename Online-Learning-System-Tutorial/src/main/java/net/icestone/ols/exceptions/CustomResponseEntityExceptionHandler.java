@@ -8,6 +8,9 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
+
+import org.springframework.dao.PermissionDeniedDataAccessException;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,12 +29,29 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+
+import java.sql.SQLIntegrityConstraintViolationException;
+
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
 @Slf4j
 public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
+	
+//    @ExceptionHandler(value = {SQLIntegrityConstraintViolationException.class, DataIntegrityViolationException.class})
+//    protected ResponseEntity<Object> handleConflict(RuntimeException ex, WebRequest request) {
+//      System.out.println(ex.getMessage());
+//      
+//      ApiError apiError = new ApiError(BAD_REQUEST);
+//      apiError.setMessage("Validation error");
+//      return buildResponseEntity(apiError);
+//      
+//    }
+//	
+	
+	
     /**
      * Handle MissingServletRequestParameterException. Triggered when a 'required' request parameter is missing.
      *
@@ -246,7 +266,6 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
     protected ResponseEntity<Object> handleCustomConstraintViolationException(
     		CustomConstraintViolationException ex) {
         ApiError apiError = new ApiError(BAD_REQUEST);
-        apiError.setMessage("Validation error");
         
         apiError.addValidationErrors(ex.getBindingResult().getFieldErrors());
         apiError.addValidationError(ex.getBindingResult().getGlobalErrors());
@@ -254,8 +273,35 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
         return buildResponseEntity(apiError);
     }
     
+   
+
+    
+    
+    /**
+     * Handles PermissionDeniedDataAccessException. 
+     *
+     * @param ex the PermissionDeniedDataAccessException
+     * @return the ApiError object
+     */
+    @ExceptionHandler(PermissionDeniedDataAccessException.class)
+    protected ResponseEntity<Object> PermissionDeniedDataAccessException(
+    		PermissionDeniedDataAccessException ex) {
+        ApiError apiError = new ApiError(UNAUTHORIZED);
+        apiError.setMessage("Unauthorized Access");
+        return buildResponseEntity(apiError);
+    }
+    
+    
+    
     private ResponseEntity<Object> buildResponseEntity(ApiError apiError) {
         return new ResponseEntity<>(apiError, apiError.getStatus());
     }
+    
+    
+    
+    
+    
+    
+    
 
 }

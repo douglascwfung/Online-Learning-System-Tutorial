@@ -41,10 +41,10 @@ public class SchoolSubjectController {
     private SchoolSubjectValidator schoolSubjectValidator;
 	
 	
-    @GetMapping("/all")
+    @GetMapping("/get/all")
     public Iterable<SchoolSubject> getAllProjects(){return schoolSubjectService.findAllSchoolSubjects();}
 
-    @GetMapping("subjectname/{subjectName}")
+    @GetMapping("/get/subjectname/{subjectName}")
     public ResponseEntity<?> findBySubjectName(@PathVariable String subjectName) {
     	
     	SchoolSubject schoolSubject = schoolSubjectService.findBySubjectName(subjectName);
@@ -60,7 +60,7 @@ public class SchoolSubjectController {
     }
 	
     
-    @GetMapping("id/{id}")
+    @GetMapping("/get/id/{id}")
     public ResponseEntity<?> findByID(@PathVariable Long id) {
     	
     	Optional<SchoolSubject> schoolSubject = schoolSubjectService.findById(id);
@@ -86,30 +86,11 @@ public class SchoolSubjectController {
         	}
     
     
-    @PostMapping("")
+    @PostMapping("/post")
     public ResponseEntity<?> createSchoolSubject(@Valid @RequestBody SchoolSubject schoolSubject, BindingResult result){
-    	
-    	System.out.println("before:"+result);
     	
     	schoolSubjectValidator.validate(schoolSubject,result);
     	
-    	System.out.println("after:"+result);
-    	
-    	
-    	System.out.println("after 1:"+result.getModel());
-    	
-    	System.out.println("after 2:"+result.getAllErrors());
-    	
-    	//SpringValidatorAdapter springValidatorAdapter = new SpringValidatorAdapter((Validator) schoolSubjectValidator);
-    	
-    	
-    	
-    	//ConstraintViolationException summary = new ConstraintViolationException((Set) result);
-
-    	
-    	//Set<ConstraintViolation<SchoolSubject>> violations = new Set<ConstraintViolation<SchoolSubject>>;
-    	
-    	//if (result.getErrorCount() > 0) throw new ConstraintViolationException(result) ; 
     	if (result.getErrorCount() > 0) throw new CustomConstraintViolationException("School Subject Validation Error", result) ; 
     	
     	SchoolSubject schoolSubject1 = schoolSubjectService.saveOrUpdateSchoolSubject(schoolSubject);
@@ -117,7 +98,7 @@ public class SchoolSubjectController {
     }
     
     
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteProject(@PathVariable Long id){
     	
     	schoolSubjectService.deleteSchoolSubjectById(id);
