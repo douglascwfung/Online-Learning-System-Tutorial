@@ -26,6 +26,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     public void commence(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
                          AuthenticationException ex) throws IOException, ServletException {
 
+        String expired = (String) httpServletRequest.getAttribute("expired");    	
     	HttpStatus status;
     	
         if (ex instanceof BadCredentialsException ) {
@@ -37,7 +38,12 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         }
         
         ApiError apiError = new ApiError(status);
-        apiError.setMessage(ex.getMessage());
+        
+      if (expired!=null){
+    	  apiError.setMessage("Expired JWT token");
+	  }else{
+		  apiError.setMessage(ex.getMessage());
+	  }
         
         httpServletResponse.setContentType("application/json");
         httpServletResponse.setStatus(status.value());
